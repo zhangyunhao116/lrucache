@@ -1,0 +1,6 @@
+github.com/ZYunH/gotools v0.0.7 h1:cJTIEMguFXYEDNpWpAE8oHy3UHS7bPVXlw8u50+s2/E=
+github.com/ZYunH/gotools v0.0.7/go.mod h1:QuhkqVNsePtcjPluFSTor/DoP2ofuBmwe+LSoVNb7EE=
+github.com/ZYunH/goutils v0.0.0-20190903023839-b4cd001fb253 h1:wZg50D1FeY9qKK/Lkv2yJFtkLo2XKBM/+tofdIKk6BA=
+github.com/ZYunH/goutils v0.0.0-20190903023839-b4cd001fb253/go.mod h1:h3Te8GoNELRotTmXreZGix0sdz1dqMLNLpuQ6ZQEa7w=
+github.com/hashicorp/golang-lru v0.5.3 h1:YPkqC67at8FYaadspW/6uE0COsBxS2656RLEr8Bppgk=
+github.com/hashicorp/golang-lru v0.5.3/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
