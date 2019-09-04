@@ -8,12 +8,13 @@ import (
 type LRUCache struct {
 	m       map[string]node
 	root    *node
-	buf     []byte
-	bufNode node
-	lock sync.RWMutex
 	maxSize int
 	hits    int
 	misses  int
+
+	lock     sync.RWMutex
+	_buf     []byte
+	_bufNode node
 }
 
 type node struct {
@@ -23,14 +24,14 @@ type node struct {
 	next  *node
 }
 
-func NewLRUCache(maxSize int) *LRUCache {
+func New(maxSize int) *LRUCache {
 	if maxSize <= 0 {
 		panic("maxSize must be greater than 0, use map instead of LRUCache in case maxSize == 0")
 	}
 	root := &node{}
 	root.next = root
 	root.prev = root
-	return &LRUCache{m: make(map[string]node, maxSize), root: root, buf: make([]byte, 0, 64), maxSize: maxSize}
+	return &LRUCache{m: make(map[string]node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
 }
 
 func deepCopyNode(n node) node {
@@ -38,14 +39,14 @@ func deepCopyNode(n node) node {
 }
 
 func (c *LRUCache) Set(key, value interface{}) bool {
-	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c.buf, key))
+	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
 
 	c.lock.Lock()
-	c.bufNode = c.m[k]
-	if c.bufNode.next == nil { // This means the k not in the map
+	c._bufNode = c.m[k]
+	if c._bufNode.next == nil { // This means the k not in the map
 		if len(c.m) < c.maxSize-1 {
 			// Cache is not full, insert a new node
-			_node := deepCopyNode(c.bufNode)
+			_node := deepCopyNode(c._bufNode)
 			_node.key = k
 			_node.value = value
 			_node.next = c.root
@@ -79,19 +80,19 @@ func (c *LRUCache) Set(key, value interface{}) bool {
 }
 
 func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
-	k := goutils.BytesToString(InterfaceToBytesWithBuf(c.buf, key))
+	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
 	c.lock.Lock()
-	c.bufNode = c.m[k]
-	if c.bufNode.next == nil {
+	c._bufNode = c.m[k]
+	if c._bufNode.next == nil {
 		// This means the k not in the map
-		c.misses += 1
+		c.misses++
 		c.lock.Unlock()
 		return nil, false
 	} else {
 		// Hits a key, drop it from the original location, and insert it
 		// to the location between root.prev and root(The latest one in cache)
-		_node := deepCopyNode(c.bufNode)
-		c.hits += 1
+		_node := deepCopyNode(c._bufNode)
+		c.hits++
 		_node.prev.next = _node.next
 		_node.next.prev = _node.prev
 		_node.prev = c.root.prev
