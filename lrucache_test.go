@@ -35,7 +35,7 @@ func TestNewLRUCache(t *testing.T) {
 	}
 
 	// Get non-existent key
-	v, ok = l.Get(2)
+	v, ok = l.Get(999)
 	if v != nil || ok {
 		t.Error("error get non-existent key")
 	}
@@ -49,19 +49,21 @@ func TestNewLRUCache(t *testing.T) {
 	if v != nil || ok {
 		t.Error("error get eliminated key")
 	}
-
 	// Get sort
-	// Now the key in cache is (4,3,2)
+	// Now the key in cache is (4,3,2), left is newer
 	v, ok = l.Get(2) // Cache : (2,4,3)
 	if v != 20 || !ok {
 		t.Error("error get exists key")
 	}
 
-	l.Set(5, 50) // Now should be (5,2,4)
-	v,_ = l.Get(2)
+	l.Set(5, 50) // Now should be (5,2,4), root is 4
 	v, ok = l.Get(3)
 	if v != nil || ok {
 		t.Error("error get sort")
+	}
+
+	if l.root.value != 40 || l.root.next.value != 20 || l.root.next.next.value != 50 {
+		t.Error("error linked list")
 	}
 
 }

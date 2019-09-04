@@ -6,7 +6,7 @@ import (
 )
 
 type LRUCache struct {
-	m       map[string]node
+	m       map[string]*node
 	root    *node
 	maxSize int
 	hits    int
@@ -14,7 +14,7 @@ type LRUCache struct {
 
 	lock     sync.RWMutex
 	_buf     []byte
-	_bufNode node
+	_bufNode *node
 }
 
 type node struct {
@@ -31,7 +31,7 @@ func New(maxSize int) *LRUCache {
 	root := &node{}
 	root.next = root
 	root.prev = root
-	return &LRUCache{m: make(map[string]node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
+	return &LRUCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
 }
 
 func deepCopyNode(n node) node {
@@ -43,18 +43,18 @@ func (c *LRUCache) Set(key, value interface{}) bool {
 
 	c.lock.Lock()
 	c._bufNode = c.m[k]
-	if c._bufNode.next == nil { // This means the k not in the map
+	if c._bufNode == nil { // This means the k not in the map
 		if len(c.m) < c.maxSize-1 {
 			// Cache is not full, insert a new node
-			_node := deepCopyNode(c._bufNode)
+			_node := &node{}
 			_node.key = k
 			_node.value = value
 			_node.next = c.root
 			_node.prev = c.root.prev
 			c.m[k] = _node
 
-			c.root.prev.next = &_node
-			c.root.prev = &_node
+			c.root.prev.next = _node
+			c.root.prev = _node
 
 			c.lock.Unlock()
 			return false
@@ -65,7 +65,7 @@ func (c *LRUCache) Set(key, value interface{}) bool {
 			delete(c.m, c.root.key)
 			c.root.key = k
 			c.root.value = value
-			c.m[k] = *c.root
+			c.m[k] = c.root
 			c.root = c.root.next
 
 			c.lock.Unlock()
@@ -83,7 +83,7 @@ func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
 	c.lock.Lock()
 	c._bufNode = c.m[k]
-	if c._bufNode.next == nil {
+	if c._bufNode == nil {
 		// This means the k not in the map
 		c.misses++
 		c.lock.Unlock()
@@ -91,17 +91,17 @@ func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 	} else {
 		// Hits a key, drop it from the original location, and insert it
 		// to the location between root.prev and root(The latest one in cache)
-		_node := deepCopyNode(c._bufNode)
 		c.hits++
-		_node.prev.next = _node.next
-		_node.next.prev = _node.prev
-		_node.prev = c.root.prev
-		_node.next = c.root
+		c._bufNode.prev.next = c._bufNode.next
+		c._bufNode.next.prev = c._bufNode.prev
+		c.root = c.root.next
+		c._bufNode.prev = c.root.prev
+		c._bufNode.next = c.root
 
-		c.root.prev.next = &_node
-		c.root.prev = &_node
+		c.root.prev.next = c._bufNode
+		c.root.prev = c._bufNode
 
 		c.lock.Unlock()
-		return _node.value, true
+		return c._bufNode.value, true
 	}
 }
