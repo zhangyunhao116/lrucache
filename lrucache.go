@@ -40,7 +40,10 @@ func deepCopyNode(n node) node {
 
 func (c *LRUCache) Set(key, value interface{}) bool {
 	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
+	return c.set(k, value)
+}
 
+func (c *LRUCache) set(k string, value interface{}) bool {
 	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
@@ -104,4 +107,14 @@ func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 		c.lock.Unlock()
 		return c._bufNodePtr.value, true
 	}
+}
+
+func (c *LRUCache) MSet(kvs ...interface{}) bool {
+	if len(kvs) < 2 {
+		panic("at least one key and one value")
+	}
+
+	key := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	value := kvs[len(kvs)-1]
+	return c.set(key, value)
 }
