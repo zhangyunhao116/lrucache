@@ -84,6 +84,10 @@ func (c *LRUCache) set(k string, value interface{}) bool {
 
 func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
+	return c.get(k)
+}
+
+func (c *LRUCache) get(k string) (interface{}, bool) {
 	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil {
@@ -117,4 +121,9 @@ func (c *LRUCache) MSet(kvs ...interface{}) bool {
 	key := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
 	value := kvs[len(kvs)-1]
 	return c.set(key, value)
+}
+
+func (c *LRUCache) MGet(keys ...interface{}) (interface{}, bool) {
+	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
+	return c.get(k)
 }

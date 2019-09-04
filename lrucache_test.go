@@ -185,3 +185,18 @@ func TestLRUCache(t *testing.T) {
 	}
 
 }
+
+func TestLRUCache_MSet(t *testing.T) {
+	l := New(64)
+
+	replace := l.MSet(1, 2, 3, "666")
+	if replace {
+		t.Error("error Mset")
+	}
+
+	v, ok := l.MGet(1, 2, 3)
+	if v != "666" || !ok {
+		t.Error("error mget")
+	}
+
+}
