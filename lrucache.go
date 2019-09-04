@@ -12,9 +12,9 @@ type LRUCache struct {
 	hits    int
 	misses  int
 
-	lock     sync.RWMutex
-	_buf     []byte
-	_bufNode *node
+	lock        sync.RWMutex
+	_buf        []byte
+	_bufNodePtr *node
 }
 
 type node struct {
@@ -42,8 +42,8 @@ func (c *LRUCache) Set(key, value interface{}) bool {
 	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
 
 	c.lock.Lock()
-	c._bufNode = c.m[k]
-	if c._bufNode == nil { // This means the k not in the map
+	c._bufNodePtr = c.m[k]
+	if c._bufNodePtr == nil { // This means the k not in the map
 		if len(c.m) < c.maxSize-1 {
 			// Cache is not full, insert a new node
 			_node := &node{}
@@ -82,8 +82,8 @@ func (c *LRUCache) Set(key, value interface{}) bool {
 func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
 	c.lock.Lock()
-	c._bufNode = c.m[k]
-	if c._bufNode == nil {
+	c._bufNodePtr = c.m[k]
+	if c._bufNodePtr == nil {
 		// This means the k not in the map
 		c.misses++
 		c.lock.Unlock()
@@ -92,16 +92,16 @@ func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
 		// Hits a key, drop it from the original location, and insert it
 		// to the location between root.prev and root(The latest one in cache)
 		c.hits++
-		c._bufNode.prev.next = c._bufNode.next
-		c._bufNode.next.prev = c._bufNode.prev
+		c._bufNodePtr.prev.next = c._bufNodePtr.next
+		c._bufNodePtr.next.prev = c._bufNodePtr.prev
 		c.root = c.root.next
-		c._bufNode.prev = c.root.prev
-		c._bufNode.next = c.root
+		c._bufNodePtr.prev = c.root.prev
+		c._bufNodePtr.next = c.root
 
-		c.root.prev.next = c._bufNode
-		c.root.prev = c._bufNode
+		c.root.prev.next = c._bufNodePtr
+		c.root.prev = c._bufNodePtr
 
 		c.lock.Unlock()
-		return c._bufNode.value, true
+		return c._bufNodePtr.value, true
 	}
 }

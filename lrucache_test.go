@@ -137,7 +137,7 @@ func TestDeepCopyNode(t *testing.T) {
 
 }
 
-func TestNewLRUCache(t *testing.T) {
+func TestLRUCache(t *testing.T) {
 	l := New(3)
 
 	// Simple set
