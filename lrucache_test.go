@@ -122,21 +122,6 @@ func BenchmarkLRU_Freq_extra(b *testing.B) {
 	b.Logf("hit: %d miss: %d ratio: %f", hit, miss, float64(hit)/float64(miss))
 }
 
-func TestDeepCopyNode(t *testing.T) {
-	mockPrevNode := node{}
-	mockNextNode := node{}
-	node := node{key: "111", value: "222", prev: &mockPrevNode, next: &mockNextNode}
-	newNode := deepCopyNode(node)
-	if &node == &newNode {
-		t.Error("error same address")
-	}
-
-	if node.key != newNode.key || node.value != newNode.value || node.prev != newNode.prev || node.next != newNode.next {
-		t.Error("error content")
-	}
-
-}
-
 func TestLRUCache(t *testing.T) {
 	l := New(3)
 

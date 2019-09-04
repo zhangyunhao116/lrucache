@@ -34,10 +34,6 @@ func New(maxSize int) *LRUCache {
 	return &LRUCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
 }
 
-func deepCopyNode(n node) node {
-	return node{key: n.key, value: n.value, prev: n.prev, next: n.next}
-}
-
 func (c *LRUCache) Set(key, value interface{}) bool {
 	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
 	return c.set(k, value)
