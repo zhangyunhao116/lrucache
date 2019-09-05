@@ -84,12 +84,12 @@ func (c *lruCache) Get(key interface{}) (interface{}, bool) {
 }
 
 func (c *lruCache) get(k string) (interface{}, bool) {
-	c.lock.Lock()
+	c.lock.RLock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil {
 		// This means the k not in the map
 		c.misses++
-		c.lock.Unlock()
+		c.lock.RUnlock()
 		return nil, false
 	} else {
 		// Hits a key, drop it from the original location, and insert it
@@ -104,7 +104,7 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 		c.root.prev.next = c._bufNodePtr
 		c.root.prev = c._bufNodePtr
 
-		c.lock.Unlock()
+		c.lock.RUnlock()
 		return c._bufNodePtr.value, true
 	}
 }
