@@ -26,7 +26,7 @@ type node struct {
 
 var bit = 32 << (^uint(0) >> 63)
 
-// Create a new LRU cache with max size.
+// New creates a new LRU cache with max size.
 func New(maxSize int) *lruCache {
 	if maxSize <= 0 {
 		panic("maxSize must be greater than 0, use map instead of LRUCache in case maxSize == 0")
