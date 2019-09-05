@@ -123,3 +123,7 @@ func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
 	return c.get(k)
 }
+
+func (c *lruCache) Ratio() float64 {
+	return float64(c.hits / c.misses)
+}
