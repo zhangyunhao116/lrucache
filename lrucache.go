@@ -24,6 +24,8 @@ type node struct {
 	next  *node
 }
 
+var bit = 32 << (^uint(0) >> 63)
+
 func New(maxSize int) *lruCache {
 	if maxSize <= 0 {
 		panic("maxSize must be greater than 0, use map instead of LRUCache in case maxSize == 0")
@@ -132,6 +134,10 @@ func (c *lruCache) MSet(kvs ...interface{}) bool {
 func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
 	return c.get(k)
+}
+
+func (c *lruCache) Len() int {
+	return len(c.m)
 }
 
 func (c *lruCache) HitRatio() float64 {
