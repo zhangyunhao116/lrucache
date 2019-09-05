@@ -26,6 +26,7 @@ type node struct {
 
 var bit = 32 << (^uint(0) >> 63)
 
+// Create a new LRU cache with max size.
 func New(maxSize int) *lruCache {
 	if maxSize <= 0 {
 		panic("maxSize must be greater than 0, use map instead of LRUCache in case maxSize == 0")
@@ -40,7 +41,7 @@ func New(maxSize int) *lruCache {
 //
 // The returned value indicates whether a key is eliminated from cache.
 func (c *lruCache) Set(key, value interface{}) bool {
-	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
+	k := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, key))
 	return c.set(k, value)
 }
 
@@ -82,19 +83,15 @@ func (c *lruCache) set(k string, value interface{}) bool {
 
 // Get value via a single key.
 func (c *lruCache) Get(key interface{}) (interface{}, bool) {
-	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
+	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
 	return c.get(k)
 }
 
 func (c *lruCache) get(k string) (interface{}, bool) {
 	c.lock.RLock()
 	c._bufNodePtr = c.m[k]
-	if c._bufNodePtr == nil {
-		// This means the k not in the map
-		c.misses++
-		c.lock.RUnlock()
-		return nil, false
-	} else {
+
+	if c._bufNodePtr != nil {
 		// Hits a key, drop it from the original location, and insert it
 		// to the location between root.prev and root (The latest location in cache)
 		c.hits++
@@ -110,6 +107,11 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 		c.lock.RUnlock()
 		return c._bufNodePtr.value, true
 	}
+
+	// Here means the k not in the map
+	c.misses++
+	c.lock.RUnlock()
+	return nil, false
 }
 
 // Set multi-keys and corresponding single value, the last argument in kvs
@@ -127,14 +129,14 @@ func (c *lruCache) MSet(kvs ...interface{}) bool {
 		panic("at least one key and one value")
 	}
 
-	key := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
 	value := kvs[len(kvs)-1]
 	return c.set(key, value)
 }
 
 // Get value via multi-keys.
 func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
-	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
+	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
 	return c.get(k)
 }
 

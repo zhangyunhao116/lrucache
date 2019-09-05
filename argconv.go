@@ -10,7 +10,7 @@ type mockIface struct {
 	data unsafe.Pointer
 }
 
-func InterfaceToBytes(args ...interface{}) []byte {
+func interfaceToBytes(args ...interface{}) []byte {
 	b := make([]byte, 0, len(args)*5)
 	for _, v := range args {
 		switch v.(type) {
@@ -133,7 +133,7 @@ func InterfaceToBytes(args ...interface{}) []byte {
 	return b
 }
 
-func InterfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
+func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 	b = b[0:] // Reset buffer
 	for _, v := range args {
 		switch v.(type) {
