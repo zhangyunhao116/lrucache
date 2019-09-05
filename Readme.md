@@ -1,6 +1,6 @@
 # lrucache
 
-High-performance LRU cache implementation with multi-keys supported for Go.
+High-performance LRU cache implementation with multi-keys supported for Go
 
 
 
