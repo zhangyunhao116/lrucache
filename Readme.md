@@ -60,5 +60,5 @@ print("hitRatio:", fmt.Sprint(hitRatio), "\r\n") // hitRatio: 0.5
 
 ### Tips
 
-- **Multi-keys** : Keep in mind that byte slice or string is better to have only one, this means the key-arguments only actually includes a string or a byte slice, since our strategy is just map interface{} to some bytes, potential data races can be occur if string or byte slice more than one. If you insist on doing so, don't pass binary data as string or byte slice, it can increase the risk of data races. Keep string or byte slice as printable is a good idea to avoid potential data races.
+- **Multi-keys** : Keep in mind that byte slice or string is better to have only one, this means the key-arguments only actually includes a string or a byte slice, since our strategy is just map interface{} to some bytes, potential data conflict can be occur if string or byte slice more than one. If you insist on doing so, don't pass binary data as string or byte slice, it can increase the risk of data conflict. Keep string or byte slice as printable is a good idea to avoid potential data conflict.
 
