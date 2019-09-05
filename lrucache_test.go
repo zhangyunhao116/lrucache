@@ -169,6 +169,16 @@ func TestLRUCache_Set_Get(t *testing.T) {
 		t.Error("error linked list")
 	}
 
+	// Test all types
+	testTypes := []interface{}{true, false, uint8(1), int8(1), uint16(1), int16(1), uint32(1), int32(1), uint64(1), int64(1), uint(1), int(1), []byte("111111"), "222222"}
+	for i, v := range testTypes {
+		l.Set(v, i)
+		getValue, ok := l.Get(v)
+		if !ok || getValue != i {
+			t.Error("error Get")
+		}
+	}
+
 }
 
 func TestLRUCache_MSet_MGet(t *testing.T) {
@@ -189,7 +199,7 @@ func TestLRUCache_MSet_MGet(t *testing.T) {
 		t.Error("error Mset")
 	}
 
-	v, ok = l.MGet("1", uint8(2), int16(3), int32(4), int64(5), 6, false, float32(7), float64(8), complex64(9), complex128(10) )
+	v, ok = l.MGet("1", uint8(2), int16(3), int32(4), int64(5), 6, false, float32(7), float64(8), complex64(9), complex128(10))
 	if v != "value" || !ok {
 		t.Error("error mget")
 	}
