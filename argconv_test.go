@@ -36,12 +36,12 @@ func TestInterfaceToBytes(t *testing.T) {
 	}
 
 	x = InterfaceToBytes([]byte("11111"), "22222")
-	if string(x) != "1111122222" {
+	if bit == 64 && len(x) != 26 || bit == 32 && len(x) != 18 {
 		t.Error("[]byte string error")
 	}
 
 	x = InterfaceToBytes(true, false, uint8(1), int8(1), uint16(1), int16(1), uint32(1), int32(1), uint64(1), int64(1), uint(1), int(1), []byte("111111"), "222222")
-	if bit == 64 && len(x) != 60 || bit == 32 && len(x) != 52 {
+	if bit == 64 && len(x) != 76 || bit == 32 && len(x) != 60 {
 		t.Error("mixed args error")
 	}
 
@@ -49,11 +49,10 @@ func TestInterfaceToBytes(t *testing.T) {
 	var emptyBytes []byte
 	emptyStr := ""
 	x = InterfaceToBytes(emptyBytes, emptyStr)
-	if len(x) != 0 {
+	if bit == 64 && len(x) != 16 || bit == 32 && len(x) != 8 {
 		t.Error("empty Bytes or String error")
 	}
 
-	x = InterfaceToBytes(nil)
 }
 
 func TestInterfaceToBytesWithBuf(t *testing.T) {
@@ -96,12 +95,12 @@ func TestInterfaceToBytesWithBuf(t *testing.T) {
 	}
 
 	x = mockFunc([]byte("11111"), "22222")
-	if string(x) != "1111122222" {
+	if bit == 64 && len(x) != 26 || bit == 32 && len(x) != 18 {
 		t.Error("[]byte string error")
 	}
 
 	x = mockFunc(true, false, uint8(1), int8(1), uint16(1), int16(1), uint32(1), int32(1), uint64(1), int64(1), uint(1), int(1), []byte("111111"), "222222")
-	if bit == 64 && len(x) != 60 || bit == 32 && len(x) != 52 {
+	if bit == 64 && len(x) != 76 || bit == 32 && len(x) != 60 {
 		t.Error("mixed args error")
 	}
 
@@ -109,12 +108,9 @@ func TestInterfaceToBytesWithBuf(t *testing.T) {
 	var emptyBytes []byte
 	emptyStr := ""
 	x = mockFunc(emptyBytes, emptyStr)
-	if len(x) != 0 {
+	if bit == 64 && len(x) != 16 || bit == 32 && len(x) != 8 {
 		t.Error("empty Bytes or String error")
 	}
-
-	x = mockFunc(nil)
-
 }
 
 func BenchmarkInterfaceToBytes(b *testing.B) {
