@@ -96,7 +96,7 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 		return nil, false
 	} else {
 		// Hits a key, drop it from the original location, and insert it
-		// to the location between root.prev and root(The latest one in cache)
+		// to the location between root.prev and root (The latest location in cache)
 		c.hits++
 		c._bufNodePtr.prev.next = c._bufNodePtr.next
 		c._bufNodePtr.next.prev = c._bufNodePtr.prev
@@ -115,11 +115,13 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 // Set multi-keys and corresponding single value, the last argument in kvs
 // is the value, this means that len(kvs) must >= 2, or panic will occur.
 //
-// Keep in mind that byte slice or string is better to have only one, since
-// our strategy is just map interface{} to some bytes, potential data races
-// can be occur. If you insist on doing so, don't pass binary string or
-// byte slice, it will increase the risk of data races. Keep string or byte
-// slice as printable is good idea to avoid potential data races.
+// Keep in mind that byte slice or string is better to have only one, this
+// means the key-arguments only actually includes a string or a byte slice,
+// since our strategy is just map interface{} to some bytes, potential data races
+// can be occur if string or byte slice more than one. If you insist on doing so,
+// don't pass binary data as string or byte slice, it can increase the risk of
+// data races. Keep string or byte slice as printable is a good idea to avoid
+// potential data races.
 func (c *lruCache) MSet(kvs ...interface{}) bool {
 	if len(kvs) < 2 {
 		panic("at least one key and one value")
