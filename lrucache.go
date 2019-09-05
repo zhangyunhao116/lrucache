@@ -34,6 +34,9 @@ func New(maxSize int) *lruCache {
 	return &lruCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 128), maxSize: maxSize}
 }
 
+// Set single key and value.
+//
+// The returned value indicates whether a key is eliminated from cache.
 func (c *lruCache) Set(key, value interface{}) bool {
 	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
 	return c.set(k, value)
@@ -54,13 +57,10 @@ func (c *lruCache) set(k string, value interface{}) bool {
 
 			c.root.prev.next = _node
 			c.root.prev = _node
-
-			c.lock.Unlock()
-			return false
 		} else {
 			// Cache is full, replace the oldest one with the new node,
 			// in this case, we just replace the original root with the
-			// new root, and makes the original root.next become new root.
+			// new root, and make the original root.next become the new root.
 			delete(c.m, c.root.key)
 			c.root.key = k
 			c.root.value = value
@@ -71,13 +71,14 @@ func (c *lruCache) set(k string, value interface{}) bool {
 			return true
 		}
 	} else {
-		// Hits a key, we do nothing in this case, since the key and
-		// value already exists.
+		// Hits a key, we just update its value.
+		c._bufNodePtr.value = value
 	}
 	c.lock.Unlock()
 	return false
 }
 
+// Get value via a single key.
 func (c *lruCache) Get(key interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
 	return c.get(k)
@@ -109,6 +110,14 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 	}
 }
 
+// Set multi-keys and corresponding single value, the last argument in kvs
+// is the value, this means that len(kvs) must >= 2, or panic will occur.
+//
+// Keep in mind that byte slice or string is better to have only one, since
+// our strategy is just map interface{} to some bytes, potential data races
+// can be occur. If you insist on doing so, don't pass binary string or
+// byte slice, it will increase the risk of data races. Keep string or byte
+// slice as printable is good idea to avoid potential data races.
 func (c *lruCache) MSet(kvs ...interface{}) bool {
 	if len(kvs) < 2 {
 		panic("at least one key and one value")
@@ -119,11 +128,16 @@ func (c *lruCache) MSet(kvs ...interface{}) bool {
 	return c.set(key, value)
 }
 
+// Get value via multi-keys.
 func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
 	return c.get(k)
 }
 
-func (c *lruCache) Ratio() float64 {
-	return float64(c.hits / c.misses)
+func (c *lruCache) HitRatio() float64 {
+	return float64(c.hits) / float64(c.misses+c.hits)
+}
+
+func (c *lruCache) Info() (hits, misses int) {
+	return c.hits, c.misses
 }
