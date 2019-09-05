@@ -122,7 +122,7 @@ func BenchmarkAll_Freq_extra(b *testing.B) {
 	b.Logf("hit: %d miss: %d ratio: %f", hit, miss, float64(hit)/float64(miss))
 }
 
-func TestLRUCache(t *testing.T) {
+func TestLRUCache_Set_Get(t *testing.T) {
 	l := New(3)
 
 	// Simple set
@@ -171,16 +171,26 @@ func TestLRUCache(t *testing.T) {
 
 }
 
-func TestLRUCache_MSet(t *testing.T) {
+func TestLRUCache_MSet_MGet(t *testing.T) {
 	l := New(64)
 
-	replace := l.MSet(1, 2, 3, "666")
+	replace := l.MSet(1, 2, "666")
 	if replace {
 		t.Error("error Mset")
 	}
 
-	v, ok := l.MGet(1, 2, 3)
+	v, ok := l.MGet(1, 2)
 	if v != "666" || !ok {
+		t.Error("error mget")
+	}
+
+	replace = l.MSet("1", uint8(2), int16(3), int32(4), int64(5), 6, false, float32(7), float64(8), complex64(9), complex128(10), "value")
+	if replace {
+		t.Error("error Mset")
+	}
+
+	v, ok = l.MGet("1", uint8(2), int16(3), int32(4), int64(5), 6, false, float32(7), float64(8), complex64(9), complex128(10) )
+	if v != "value" || !ok {
 		t.Error("error mget")
 	}
 
