@@ -31,7 +31,7 @@ func New(maxSize int) *lruCache {
 	root := &node{}
 	root.next = root
 	root.prev = root
-	return &lruCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
+	return &lruCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 128), maxSize: maxSize}
 }
 
 func (c *lruCache) Set(key, value interface{}) bool {

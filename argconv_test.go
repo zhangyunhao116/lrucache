@@ -120,8 +120,15 @@ func BenchmarkInterfaceToBytes(b *testing.B) {
 }
 
 func BenchmarkInterfaceToBytesWithBuf(b *testing.B) {
-	buf := make([]byte, 0, 32)
+	buf := make([]byte, 0, 128)
 	for i := 0; i < b.N; i++ {
 		InterfaceToBytesWithBuf(buf, i)
+	}
+}
+
+func BenchmarkInterfaceToBytesWithBufTypes(b *testing.B) {
+	buf := make([]byte, 0, 128)
+	for i := 0; i < b.N; i++ {
+		InterfaceToBytesWithBuf(buf, i, i+1, "testString")
 	}
 }
