@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func BenchmarkLRU_Rand(b *testing.B) {
+func BenchmarkAll_Rand(b *testing.B) {
 	l := New(8192)
 
 	trace := make([]int64, b.N*2)
@@ -32,7 +32,7 @@ func BenchmarkLRU_Rand(b *testing.B) {
 	b.Logf("hit: %d miss: %d ratio: %f", hit, miss, float64(hit)/float64(miss))
 }
 
-func BenchmarkLRU_Rand_extra(b *testing.B) {
+func BenchmarkAll_Rand_extra(b *testing.B) {
 	l, err := lru.New(8192)
 	if err != nil {
 		b.Fatalf("err: %v", err)
@@ -61,7 +61,7 @@ func BenchmarkLRU_Rand_extra(b *testing.B) {
 	b.Logf("hit: %d miss: %d ratio: %f", hit, miss, float64(hit)/float64(miss))
 }
 
-func BenchmarkLRU_Freq(b *testing.B) {
+func BenchmarkAll_Freq(b *testing.B) {
 	l := New(8192)
 
 	trace := make([]int64, b.N*2)
@@ -90,7 +90,7 @@ func BenchmarkLRU_Freq(b *testing.B) {
 	b.Logf("hit: %d miss: %d ratio: %f", hit, miss, float64(hit)/float64(miss))
 }
 
-func BenchmarkLRU_Freq_extra(b *testing.B) {
+func BenchmarkAll_Freq_extra(b *testing.B) {
 	l, err := lru.New(8192)
 	if err != nil {
 		b.Fatalf("err: %v", err)
