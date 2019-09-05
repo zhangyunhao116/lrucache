@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type LRUCache struct {
+type lruCache struct {
 	m       map[string]*node
 	root    *node
 	maxSize int
@@ -24,22 +24,22 @@ type node struct {
 	next  *node
 }
 
-func New(maxSize int) *LRUCache {
+func New(maxSize int) *lruCache {
 	if maxSize <= 0 {
 		panic("maxSize must be greater than 0, use map instead of LRUCache in case maxSize == 0")
 	}
 	root := &node{}
 	root.next = root
 	root.prev = root
-	return &LRUCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
+	return &lruCache{m: make(map[string]*node, maxSize), root: root, _buf: make([]byte, 0, 64), maxSize: maxSize}
 }
 
-func (c *LRUCache) Set(key, value interface{}) bool {
+func (c *lruCache) Set(key, value interface{}) bool {
 	k := goutils.BytesToStringNew(InterfaceToBytesWithBuf(c._buf, key))
 	return c.set(k, value)
 }
 
-func (c *LRUCache) set(k string, value interface{}) bool {
+func (c *lruCache) set(k string, value interface{}) bool {
 	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
@@ -78,12 +78,12 @@ func (c *LRUCache) set(k string, value interface{}) bool {
 	return false
 }
 
-func (c *LRUCache) Get(key interface{}) (interface{}, bool) {
+func (c *lruCache) Get(key interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, key))
 	return c.get(k)
 }
 
-func (c *LRUCache) get(k string) (interface{}, bool) {
+func (c *lruCache) get(k string) (interface{}, bool) {
 	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil {
@@ -109,7 +109,7 @@ func (c *LRUCache) get(k string) (interface{}, bool) {
 	}
 }
 
-func (c *LRUCache) MSet(kvs ...interface{}) bool {
+func (c *lruCache) MSet(kvs ...interface{}) bool {
 	if len(kvs) < 2 {
 		panic("at least one key and one value")
 	}
@@ -119,7 +119,7 @@ func (c *LRUCache) MSet(kvs ...interface{}) bool {
 	return c.set(key, value)
 }
 
-func (c *LRUCache) MGet(keys ...interface{}) (interface{}, bool) {
+func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
 	k := goutils.BytesToString(InterfaceToBytesWithBuf(c._buf, keys...))
 	return c.get(k)
 }
