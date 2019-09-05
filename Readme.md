@@ -1,4 +1,5 @@
 # lrucache
+[![Go Report Card](https://goreportcard.com/badge/github.com/ZYunH/lrucache)](https://goreportcard.com/report/github.com/ZYunH/lrucache)
 
 High-performance LRU cache implementation with multi-keys supported for Go
 
