@@ -2,6 +2,7 @@ package lrucache
 
 import (
 	"testing"
+	"time"
 )
 
 func TestLRUCache_Set_Get(t *testing.T) {
@@ -86,4 +87,36 @@ func TestLRUCache_MSet_MGet(t *testing.T) {
 		t.Error("error mget")
 	}
 
+}
+
+func TestDataRaces(t *testing.T) {
+	l := New(64)
+	for i := 0; i < 50; i++ {
+
+		if i%2 == 0 {
+			go func() {
+				for j := 0; j < 100; j++ {
+					l.Set(j, j)
+				}
+			}()
+		} else {
+			go func() {
+				for j := 0; j < 100; j++ {
+					l.Get(j)
+				}
+			}()
+		}
+	}
+	time.Sleep(time.Millisecond * 100)
+}
+
+func TestAppendBuffer(t *testing.T) {
+	mockBuf := make([]byte, 0, 5)
+	l := New(64)
+	l._buf = mockBuf
+	l.MSet(1, 2, 3, 4, 5, "value")
+	temp := interfaceToBytes(1, 2, 3, 4, 5)
+	if cap(l._buf) != len(temp) || &l._buf == &mockBuf {
+		t.Error("append buffer error")
+	}
 }
