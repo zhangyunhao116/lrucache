@@ -90,6 +90,34 @@ func TestLRUCache_MSet_MGet(t *testing.T) {
 
 }
 
+func TestLRUCache_Rank(t *testing.T) {
+	l := New(3)
+	l.Set(1, 1)
+	l.Set(2, 2)
+	if !(l.root.value == nil || l.root.next.value == 1 ||
+		l.root.next.next.value == 2 || l.root.next.next.next == l.root) {
+		t.Error("rank error")
+	}
+
+	l.Set(3, 3)
+	if !(l.root.value == 1 || l.root.next.value == 2 ||
+		l.root.next.next.value == 3 || l.root.next.next.next == l.root) {
+		t.Error("rank error")
+	}
+
+	l.Get(2) // Now is 1(root), 3, 2
+	if !(l.root.value == 1 || l.root.next.value == 3 ||
+		l.root.next.next.value == 2 || l.root.next.next.next == l.root) {
+		t.Error("rank error")
+	}
+
+	l.Set(4, 4) // Now is 3(root), 2, 4
+	if !(l.root.value == 3 || l.root.next.value == 2 ||
+		l.root.next.next.value == 4 || l.root.next.next.next == l.root) {
+		t.Error("rank error")
+	}
+}
+
 func TestDataRaces(t *testing.T) {
 	l := New(64)
 	for i := 0; i < 50; i++ {
