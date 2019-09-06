@@ -24,6 +24,7 @@ type node struct {
 	next  *node
 }
 
+// Indicates 64-bit or 32-bit system.
 var bit = 32 << (^uint(0) >> 63)
 
 // New creates a new LRU cache with max size.
@@ -40,13 +41,19 @@ func New(maxSize int) *lruCache {
 // Set single key and value.
 //
 // The returned value indicates whether a key is eliminated from cache.
-func (c *lruCache) Set(key, value interface{}) bool {
+func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
+	c.lock.Lock()
 	k := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, key))
-	return c.set(k, value)
+	// Grow buffer slice to preparing enough space for next converting.
+	if cap(c._buf) < len(k) {
+		c._buf = make([]byte, 0, len(k))
+	}
+	isRemove = c.set(k, value)
+	c.lock.Unlock()
+	return isRemove
 }
 
 func (c *lruCache) set(k string, value interface{}) bool {
-	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
 		if len(c.m) < c.maxSize-1 {
@@ -70,25 +77,29 @@ func (c *lruCache) set(k string, value interface{}) bool {
 			c.m[k] = c.root
 			c.root = c.root.next
 
-			c.lock.Unlock()
 			return true
 		}
 	} else {
 		// Hits a key, we just update its value.
 		c._bufNodePtr.value = value
 	}
-	c.lock.Unlock()
 	return false
 }
 
 // Get value via a single key.
-func (c *lruCache) Get(key interface{}) (interface{}, bool) {
+func (c *lruCache) Get(key interface{}) (value interface{}, ok bool) {
+	c.lock.Lock()
 	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
-	return c.get(k)
+	// Grow buffer slice to preparing enough space for next converting.
+	if cap(c._buf) < len(k) {
+		c._buf = make([]byte, 0, len(k))
+	}
+	value, ok = c.get(k)
+	c.lock.Unlock()
+	return
 }
 
 func (c *lruCache) get(k string) (interface{}, bool) {
-	c.lock.RLock()
 	c._bufNodePtr = c.m[k]
 
 	if c._bufNodePtr != nil {
@@ -104,13 +115,11 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 		c.root.prev.next = c._bufNodePtr
 		c.root.prev = c._bufNodePtr
 
-		c.lock.RUnlock()
 		return c._bufNodePtr.value, true
 	}
 
 	// Here means the k not in the map
 	c.misses++
-	c.lock.RUnlock()
 	return nil, false
 }
 
@@ -124,20 +133,33 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 // don't pass binary data as string or byte slice, it can increase the risk of
 // data conflict. Keep string or byte slice as printable is a good idea to avoid
 // potential data conflict.
-func (c *lruCache) MSet(kvs ...interface{}) bool {
+func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 	if len(kvs) < 2 {
 		panic("at least one key and one value")
 	}
-
-	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	c.lock.Lock()
+	key := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	// Grow buffer slice to preparing enough space for next converting.
+	if cap(c._buf) < len(key) {
+		c._buf = make([]byte, 0, len(key))
+	}
 	value := kvs[len(kvs)-1]
-	return c.set(key, value)
+	isRemove = c.set(key, value)
+	c.lock.Unlock()
+	return
 }
 
 // Get value via multi-keys.
-func (c *lruCache) MGet(keys ...interface{}) (interface{}, bool) {
-	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
-	return c.get(k)
+func (c *lruCache) MGet(keys ...interface{}) (value interface{}, ok bool) {
+	c.lock.Lock()
+	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
+	// Grow buffer slice to preparing enough space for next converting.
+	if cap(c._buf) < len(key) {
+		c._buf = make([]byte, 0, len(key))
+	}
+	value, ok = c.get(key)
+	c.lock.Unlock()
+	return
 }
 
 func (c *lruCache) Len() int {
