@@ -5,16 +5,16 @@ import (
 	"unsafe"
 )
 
-type mockIface struct {
+type mockEFace struct {
 	_    uintptr
 	data unsafe.Pointer
 }
 
 func interfaceToBytes(args ...interface{}) []byte {
 	b := make([]byte, 0, len(args)*5)
-	var iface mockIface
+	var iface mockEFace
 	for _, v := range args {
-		iface = *(*mockIface)(unsafe.Pointer(&v))
+		iface = *(*mockEFace)(unsafe.Pointer(&v))
 		switch v.(type) {
 		case bool:
 			value := *(*byte)(iface.data)
@@ -119,9 +119,9 @@ func interfaceToBytes(args ...interface{}) []byte {
 }
 
 func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
-	var iface mockIface
+	var iface mockEFace
 	for _, v := range args {
-		iface = *(*mockIface)(unsafe.Pointer(&v))
+		iface = *(*mockEFace)(unsafe.Pointer(&v))
 		switch v.(type) {
 		case bool:
 			value := *(*byte)(iface.data)
