@@ -46,7 +46,6 @@ func (c *lruCache) Set(key, value interface{}) bool {
 }
 
 func (c *lruCache) set(k string, value interface{}) bool {
-	c.lock.Lock()
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
 		if len(c.m) < c.maxSize-1 {
@@ -70,14 +69,12 @@ func (c *lruCache) set(k string, value interface{}) bool {
 			c.m[k] = c.root
 			c.root = c.root.next
 
-			c.lock.Unlock()
 			return true
 		}
 	} else {
 		// Hits a key, we just update its value.
 		c._bufNodePtr.value = value
 	}
-	c.lock.Unlock()
 	return false
 }
 
@@ -88,7 +85,6 @@ func (c *lruCache) Get(key interface{}) (interface{}, bool) {
 }
 
 func (c *lruCache) get(k string) (interface{}, bool) {
-	c.lock.RLock()
 	c._bufNodePtr = c.m[k]
 
 	if c._bufNodePtr != nil {
@@ -104,13 +100,11 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 		c.root.prev.next = c._bufNodePtr
 		c.root.prev = c._bufNodePtr
 
-		c.lock.RUnlock()
 		return c._bufNodePtr.value, true
 	}
 
 	// Here means the k not in the map
 	c.misses++
-	c.lock.RUnlock()
 	return nil, false
 }
 
