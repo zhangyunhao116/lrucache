@@ -24,6 +24,7 @@ type node struct {
 	next  *node
 }
 
+// Indicates 64-bit or 32-bit system.
 var bit = 32 << (^uint(0) >> 63)
 
 // New creates a new LRU cache with max size.
@@ -137,7 +138,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 		panic("at least one key and one value")
 	}
 	c.lock.Lock()
-	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	key := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
 	// Grow buffer slice to preparing enough space for next converting.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))

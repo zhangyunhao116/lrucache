@@ -1,6 +1,7 @@
 package lrucache
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -108,6 +109,22 @@ func TestDataRaces(t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
+}
+
+func TestDataConflict(t *testing.T) {
+	l := New(5)
+
+	l.MSet(1, 2, 3, "1")
+	v, ok := l.MGet(1, 2, 3)
+	if !ok || v != "1" {
+		t.Error("get error")
+	}
+
+	l.MSet(uint(1), 2, 3, "2")
+	v, ok = l.MGet(1, 2, 3)
+	if !ok || v != "1" {
+		t.Error("get error", fmt.Sprint(v))
+	}
 }
 
 func TestAppendBuffer(t *testing.T) {
