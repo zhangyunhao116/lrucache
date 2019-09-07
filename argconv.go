@@ -93,15 +93,14 @@ func interfaceToBytes(args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
 				b = append(b, uint8(types.String), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
 				b = append(b, uint8(types.String), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
@@ -115,15 +114,14 @@ func interfaceToBytes(args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
 				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
 				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
@@ -213,15 +211,14 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
 				b = append(b, uint8(types.String), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
 				b = append(b, uint8(types.String), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
@@ -235,15 +232,14 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
 				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
 				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
