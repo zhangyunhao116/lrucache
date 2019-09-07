@@ -10,6 +10,14 @@ type mockEFace struct {
 	data unsafe.Pointer
 }
 
+// The type constants in go/types not includes byte slice,
+// so we just create one for type hints. Since the last
+// type in go/types is UntypedNil (25) in Go 1.12.7, we create
+// new type from 31.
+const (
+	TypeByteSlice = uint8(30 + iota)
+)
+
 func interfaceToBytes(args ...interface{}) []byte {
 	b := make([]byte, 0, len(args)*5)
 	var data unsafe.Pointer
@@ -109,14 +117,14 @@ func interfaceToBytes(args ...interface{}) []byte {
 			value := *(*string)(data)
 			if bit == 64 {
 				bLen := len(value)
-				b = append(b, uint8(types.UnsafePointer), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
 				bLen := len(value)
-				b = append(b, uint8(types.UnsafePointer), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
@@ -229,14 +237,14 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			value := *(*string)(data)
 			if bit == 64 {
 				bLen := len(value)
-				b = append(b, uint8(types.UnsafePointer), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
 				bLen := len(value)
-				b = append(b, uint8(types.UnsafePointer), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
