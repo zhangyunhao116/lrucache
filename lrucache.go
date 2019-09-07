@@ -44,7 +44,7 @@ func New(maxSize int) *lruCache {
 func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 	c.lock.Lock()
 	k := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, key))
-	// Grow buffer slice to preparing enough space for next converting.
+	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(k) {
 		c._buf = make([]byte, 0, len(k))
 	}
@@ -90,7 +90,7 @@ func (c *lruCache) set(k string, value interface{}) bool {
 func (c *lruCache) Get(key interface{}) (value interface{}, ok bool) {
 	c.lock.Lock()
 	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
-	// Grow buffer slice to preparing enough space for next converting.
+	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(k) {
 		c._buf = make([]byte, 0, len(k))
 	}
@@ -139,7 +139,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 	}
 	c.lock.Lock()
 	key := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
-	// Grow buffer slice to preparing enough space for next converting.
+	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))
 	}
@@ -153,7 +153,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 func (c *lruCache) MGet(keys ...interface{}) (value interface{}, ok bool) {
 	c.lock.Lock()
 	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
-	// Grow buffer slice to preparing enough space for next converting.
+	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))
 	}
