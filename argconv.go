@@ -15,7 +15,7 @@ type mockEFace struct {
 // type in go/types is UntypedNil (25) in Go 1.12.7, we create
 // new type from 31.
 const (
-	TypeByteSlice = uint8(30 + iota)
+	typeByteSlice = uint8(30 + iota)
 )
 
 func interfaceToBytes(args ...interface{}) []byte {
@@ -116,13 +116,13 @@ func interfaceToBytes(args ...interface{}) []byte {
 			value := *(*string)(data)
 			bLen := len(value)
 			if bit == 64 {
-				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, typeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, typeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
@@ -234,13 +234,13 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			value := *(*string)(data)
 			bLen := len(value)
 			if bit == 64 {
-				b = append(b, TypeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, typeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
 					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				b = append(b, TypeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+				b = append(b, typeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
 					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
