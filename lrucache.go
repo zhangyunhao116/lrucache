@@ -25,7 +25,7 @@ type node struct {
 }
 
 // Indicates 64-bit or 32-bit system.
-var bit = 32 << (^uint(0) >> 63)
+const bit = 32 << (^uint(0) >> 63)
 
 // New creates a new LRU cache with max size.
 func New(maxSize int) *lruCache {
