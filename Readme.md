@@ -60,9 +60,9 @@ print("hitRatio:", fmt.Sprint(hitRatio), "\r\n") // hitRatio: 0.5
 
 ## Supported types
 
-##### keys -> bool uint8 int8 uint16 int16 uint32 int32 uint64 int64 uint int float32 float64 complex64 complex128 []byte string
+**keys** : bool uint8 int8 uint16 int16 uint32 int32 uint64 int64 uint int float32 float64 complex64 complex128 []byte string
 
-##### value -> All types
+**value** : all types
 
 
 
