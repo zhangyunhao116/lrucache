@@ -10,6 +10,14 @@ type mockEFace struct {
 	data unsafe.Pointer
 }
 
+// The type constants in go/types not includes byte slice,
+// so we just create one for type hints. Since the last
+// type in go/types is UntypedNil (25) in Go 1.12.7, we create
+// new type from 31.
+const (
+	typeByteSlice = uint8(30 + iota)
+)
+
 func interfaceToBytes(args ...interface{}) []byte {
 	b := make([]byte, 0, len(args)*5)
 	var data unsafe.Pointer
@@ -17,61 +25,66 @@ func interfaceToBytes(args ...interface{}) []byte {
 		data = (*(*mockEFace)(unsafe.Pointer(&v))).data
 		switch v.(type) {
 		case bool:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Bool), value)
+			b = append(b, uint8(types.Bool), *(*byte)(data))
 		case uint8:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Uint8), value)
+			b = append(b, uint8(types.Uint8), *(*byte)(data))
 		case int8:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Int8), value)
+			b = append(b, uint8(types.Int8), *(*byte)(data))
 		case uint16:
-			value := *(*[2]byte)(data)
-			b = append(b, uint8(types.Uint16), value[0], value[1])
+			b = append(b, uint8(types.Uint16), (*(*[2]byte)(data))[0], (*(*[2]byte)(data))[1])
 		case int16:
-			value := *(*[2]byte)(data)
-			b = append(b, uint8(types.Int16), value[0], value[1])
+			b = append(b, uint8(types.Int16), (*(*[2]byte)(data))[0], (*(*[2]byte)(data))[1])
 		case uint32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Uint32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Uint32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case int32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Int32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Int32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case float32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Float32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Float32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case uint64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Uint64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Uint64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case int64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Int64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Int64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case float64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Float64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Float64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case complex64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Complex64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Complex64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case complex128:
-			value := *(*[16]byte)(data)
-			b = append(b, uint8(types.Complex128), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15])
+			b = append(b, uint8(types.Complex128), (*(*[16]byte)(data))[0], (*(*[16]byte)(data))[1],
+				(*(*[16]byte)(data))[2], (*(*[16]byte)(data))[3], (*(*[16]byte)(data))[4],
+				(*(*[16]byte)(data))[5], (*(*[16]byte)(data))[6], (*(*[16]byte)(data))[7],
+				(*(*[16]byte)(data))[8], (*(*[16]byte)(data))[9], (*(*[16]byte)(data))[10],
+				(*(*[16]byte)(data))[11], (*(*[16]byte)(data))[12], (*(*[16]byte)(data))[13],
+				(*(*[16]byte)(data))[14], (*(*[16]byte)(data))[15])
 		case int:
 			if bit == 64 {
-				value := *(*[8]byte)(data)
-				b = append(b, uint8(types.Int), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+				b = append(b, uint8(types.Int), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+					(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+					(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 			} else if bit == 32 {
-				value := *(*[4]byte)(data)
-				b = append(b, uint8(types.Int), value[0], value[1], value[2], value[3])
+				b = append(b, uint8(types.Int), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+					(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
 		case uint:
 			if bit == 64 {
-				value := *(*[8]byte)(data)
-				b = append(b, uint8(types.Uint), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+				b = append(b, uint8(types.Uint), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+					(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+					(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 			} else if bit == 32 {
-				value := *(*[4]byte)(data)
-				b = append(b, uint8(types.Uint), value[0], value[1], value[2], value[3])
+				b = append(b, uint8(types.Uint), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+					(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
@@ -80,14 +93,17 @@ func interfaceToBytes(args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
-				bLenBytes := *(*[8]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.String), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3], bLenBytes[4], bLenBytes[5], bLenBytes[6], bLenBytes[7])
+				b = append(b, uint8(types.String), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
-				bLenBytes := *(*[4]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.String), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3])
+				b = append(b, uint8(types.String), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
@@ -98,14 +114,17 @@ func interfaceToBytes(args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
-				bLenBytes := *(*[8]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.UnsafePointer), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3], bLenBytes[4], bLenBytes[5], bLenBytes[6], bLenBytes[7])
+				b = append(b, typeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
-				bLenBytes := *(*[4]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.UnsafePointer), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3])
+				b = append(b, typeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
@@ -124,61 +143,66 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 		data = (*(*mockEFace)(unsafe.Pointer(&v))).data
 		switch v.(type) {
 		case bool:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Bool), value)
+			b = append(b, uint8(types.Bool), *(*byte)(data))
 		case uint8:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Uint8), value)
+			b = append(b, uint8(types.Uint8), *(*byte)(data))
 		case int8:
-			value := *(*byte)(data)
-			b = append(b, uint8(types.Int8), value)
+			b = append(b, uint8(types.Int8), *(*byte)(data))
 		case uint16:
-			value := *(*[2]byte)(data)
-			b = append(b, uint8(types.Uint16), value[0], value[1])
+			b = append(b, uint8(types.Uint16), (*(*[2]byte)(data))[0], (*(*[2]byte)(data))[1])
 		case int16:
-			value := *(*[2]byte)(data)
-			b = append(b, uint8(types.Int16), value[0], value[1])
+			b = append(b, uint8(types.Int16), (*(*[2]byte)(data))[0], (*(*[2]byte)(data))[1])
 		case uint32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Uint32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Uint32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case int32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Int32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Int32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case float32:
-			value := *(*[4]byte)(data)
-			b = append(b, uint8(types.Float32), value[0], value[1], value[2], value[3])
+			b = append(b, uint8(types.Float32), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+				(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 		case uint64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Uint64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Uint64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case int64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Int64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Int64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case float64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Float64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Float64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case complex64:
-			value := *(*[8]byte)(data)
-			b = append(b, uint8(types.Complex64), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+			b = append(b, uint8(types.Complex64), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+				(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+				(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 		case complex128:
-			value := *(*[16]byte)(data)
-			b = append(b, uint8(types.Complex128), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15])
+			b = append(b, uint8(types.Complex128), (*(*[16]byte)(data))[0], (*(*[16]byte)(data))[1],
+				(*(*[16]byte)(data))[2], (*(*[16]byte)(data))[3], (*(*[16]byte)(data))[4],
+				(*(*[16]byte)(data))[5], (*(*[16]byte)(data))[6], (*(*[16]byte)(data))[7],
+				(*(*[16]byte)(data))[8], (*(*[16]byte)(data))[9], (*(*[16]byte)(data))[10],
+				(*(*[16]byte)(data))[11], (*(*[16]byte)(data))[12], (*(*[16]byte)(data))[13],
+				(*(*[16]byte)(data))[14], (*(*[16]byte)(data))[15])
 		case int:
 			if bit == 64 {
-				value := *(*[8]byte)(data)
-				b = append(b, uint8(types.Int), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+				b = append(b, uint8(types.Int), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+					(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+					(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 			} else if bit == 32 {
-				value := *(*[4]byte)(data)
-				b = append(b, uint8(types.Int), value[0], value[1], value[2], value[3])
+				b = append(b, uint8(types.Int), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+					(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
 		case uint:
 			if bit == 64 {
-				value := *(*[8]byte)(data)
-				b = append(b, uint8(types.Uint), value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7])
+				b = append(b, uint8(types.Uint), (*(*[8]byte)(data))[0], (*(*[8]byte)(data))[1],
+					(*(*[8]byte)(data))[2], (*(*[8]byte)(data))[3], (*(*[8]byte)(data))[4],
+					(*(*[8]byte)(data))[5], (*(*[8]byte)(data))[6], (*(*[8]byte)(data))[7])
 			} else if bit == 32 {
-				value := *(*[4]byte)(data)
-				b = append(b, uint8(types.Uint), value[0], value[1], value[2], value[3])
+				b = append(b, uint8(types.Uint), (*(*[4]byte)(data))[0], (*(*[4]byte)(data))[1],
+					(*(*[4]byte)(data))[2], (*(*[4]byte)(data))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
@@ -187,14 +211,17 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
-				bLenBytes := *(*[8]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.String), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3], bLenBytes[4], bLenBytes[5], bLenBytes[6], bLenBytes[7])
+				b = append(b, uint8(types.String), (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
-				bLenBytes := *(*[4]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.String), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3])
+				b = append(b, uint8(types.String), (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
@@ -205,14 +232,17 @@ func interfaceToBytesWithBuf(b []byte, args ...interface{}) []byte {
 			// bytes occupied by this string or []byte to avoid potential
 			// data conflict.
 			value := *(*string)(data)
+			bLen := len(value)
 			if bit == 64 {
-				bLen := len(value)
-				bLenBytes := *(*[8]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.UnsafePointer), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3], bLenBytes[4], bLenBytes[5], bLenBytes[6], bLenBytes[7])
+				b = append(b, typeByteSlice, (*(*[8]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[1], (*(*[8]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[3], (*(*[8]byte)(unsafe.Pointer(&bLen)))[4],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[5], (*(*[8]byte)(unsafe.Pointer(&bLen)))[6],
+					(*(*[8]byte)(unsafe.Pointer(&bLen)))[7])
 			} else if bit == 32 {
-				bLen := len(value)
-				bLenBytes := *(*[4]byte)(unsafe.Pointer(&bLen))
-				b = append(b, uint8(types.UnsafePointer), bLenBytes[0], bLenBytes[1], bLenBytes[2], bLenBytes[3])
+				b = append(b, typeByteSlice, (*(*[4]byte)(unsafe.Pointer(&bLen)))[0],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[1], (*(*[4]byte)(unsafe.Pointer(&bLen)))[2],
+					(*(*[4]byte)(unsafe.Pointer(&bLen)))[3])
 			} else {
 				panic("bit != (32 or 64)")
 			}
