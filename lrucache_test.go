@@ -118,6 +118,19 @@ func TestLRUCache_Rank(t *testing.T) {
 	}
 }
 
+func TestLRUCache_Corner(t *testing.T) {
+	l := New(1)
+	l.Set(1, 1)
+	if !(l.root.value == 1 || l.root.next == l.root || l.root.prev == l.root) {
+		t.Error("maxSize=1 error")
+	}
+
+	l.Set(1, 2)
+	if !(l.root.value == 2 || l.root.next == l.root || l.root.prev == l.root) {
+		t.Error("maxSize=1 error")
+	}
+}
+
 func TestDataRaces(t *testing.T) {
 	l := New(64)
 	for i := 0; i < 50; i++ {
