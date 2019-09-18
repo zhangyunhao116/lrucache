@@ -55,7 +55,7 @@ func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 
 // Set value via single string
 //
-// The input string is will be seen as a pseudo-string,
+// The input string will be seen as a pseudo-string,
 // which actually is a byte slice in buffer, so if we want
 // to add this string to the map, a deep copy string is required.
 func (c *lruCache) set(k string, value interface{}) bool {
@@ -107,7 +107,7 @@ func (c *lruCache) Get(key interface{}) (value interface{}, ok bool) {
 
 // Get value via a single key.
 //
-// Do not store the input string in any situation since it is just
+// Do not store the input string in any situations since it is just
 // a pseudo-string, which is actually a byte slice in shared buffer.
 func (c *lruCache) get(k string) (interface{}, bool) {
 	c._bufNodePtr = c.m[k]
