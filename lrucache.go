@@ -43,7 +43,7 @@ func New(maxSize int) *lruCache {
 // The returned value indicates whether a key is eliminated from cache.
 func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 	c.lock.Lock()
-	k := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, key))
+	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(k) {
 		c._buf = make([]byte, 0, len(k))
@@ -53,9 +53,15 @@ func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 	return isRemove
 }
 
+// Set value via single string
+//
+// The input string will be seen as a pseudo-string,
+// which actually is a byte slice in buffer, so if we want
+// to add this string to the map, a deep copy string is required.
 func (c *lruCache) set(k string, value interface{}) bool {
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
+		k = goutils.DeepCopyString(k)
 		if len(c.m) < c.maxSize-1 {
 			// Cache is not full, insert a new node
 			_node := &node{}
@@ -99,6 +105,10 @@ func (c *lruCache) Get(key interface{}) (value interface{}, ok bool) {
 	return
 }
 
+// Get value via a single key.
+//
+// Do not store the input string in any situations since it is just
+// a pseudo-string, which is actually a byte slice in shared buffer.
 func (c *lruCache) get(k string) (interface{}, bool) {
 	c._bufNodePtr = c.m[k]
 
@@ -138,7 +148,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 		panic("at least one key and one value")
 	}
 	c.lock.Lock()
-	key := goutils.BytesToStringNew(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))

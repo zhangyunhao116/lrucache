@@ -178,3 +178,23 @@ func TestAppendBuffer(t *testing.T) {
 		t.Error("append buffer error")
 	}
 }
+
+func TestLruCache_Others(t *testing.T) {
+	l := New(64)
+	l.Set(1, 1)
+	l.Get(1)
+	l.Get(2)
+
+	if l.Len() != 1 {
+		t.Error("length error")
+	}
+
+	if i, j := l.Info(); !(i == j && i == 1) {
+		t.Error("info error")
+	}
+
+	if l.HitRatio() != float64(0.5){
+		t.Error("hit ratio error")
+	}
+
+}
