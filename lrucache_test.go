@@ -193,7 +193,7 @@ func TestLruCache_Others(t *testing.T) {
 		t.Error("info error")
 	}
 
-	if l.HitRatio() != float64(0.5){
+	if l.HitRatio() != float64(0.5) {
 		t.Error("hit ratio error")
 	}
 
