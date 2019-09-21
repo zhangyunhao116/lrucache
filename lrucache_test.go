@@ -145,6 +145,9 @@ func TestDataRaces(t *testing.T) {
 			go func() {
 				for j := 0; j < 100; j++ {
 					l.Get(j)
+					l.Len()
+					l.HitRatio()
+					l.Info()
 				}
 			}()
 		}

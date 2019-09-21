@@ -3,16 +3,17 @@ package lrucache
 import (
 	"github.com/ZYunH/goutils"
 	"sync"
+	"sync/atomic"
 )
 
 type lruCache struct {
 	m       map[string]*node
 	root    *node
 	maxSize int
-	hits    int
-	misses  int
+	hits    int64
+	misses  int64
 
-	lock        sync.RWMutex
+	lock        sync.Mutex
 	_buf        []byte
 	_bufNodePtr *node
 }
@@ -115,7 +116,7 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 	if c._bufNodePtr != nil {
 		// Hits a key, drop it from the original location, and insert it
 		// to the location between root.prev and root (The latest location in cache)
-		c.hits++
+		atomic.AddInt64(&c.hits, 1)
 		c._bufNodePtr.prev.next = c._bufNodePtr.next
 		c._bufNodePtr.next.prev = c._bufNodePtr.prev
 		c.root = c.root.next
@@ -129,7 +130,7 @@ func (c *lruCache) get(k string) (interface{}, bool) {
 	}
 
 	// Here means the k not in the map
-	c.misses++
+	atomic.AddInt64(&c.misses, 1)
 	return nil, false
 }
 
@@ -173,13 +174,23 @@ func (c *lruCache) MGet(keys ...interface{}) (value interface{}, ok bool) {
 }
 
 func (c *lruCache) Len() int {
-	return len(c.m)
+	c.lock.Lock()
+	l := len(c.m)
+	c.lock.Unlock()
+
+	return l
 }
 
 func (c *lruCache) HitRatio() float64 {
-	return float64(c.hits) / float64(c.misses+c.hits)
+	hits := atomic.LoadInt64(&c.hits)
+	misses := atomic.LoadInt64(&c.misses)
+
+	return float64(hits) / float64(misses+hits)
 }
 
-func (c *lruCache) Info() (hits, misses int) {
-	return c.hits, c.misses
+func (c *lruCache) Info() (int, int) {
+	hits := atomic.LoadInt64(&c.hits)
+	misses := atomic.LoadInt64(&c.misses)
+
+	return int(hits), int(misses)
 }
