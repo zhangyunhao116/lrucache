@@ -188,9 +188,8 @@ func (c *lruCache) HitRatio() float64 {
 	return float64(hits) / float64(misses+hits)
 }
 
-func (c *lruCache) Info() (int, int) {
-	hits := atomic.LoadInt64(&c.hits)
-	misses := atomic.LoadInt64(&c.misses)
-
-	return int(hits), int(misses)
+func (c *lruCache) Info() (hits, misses int64) {
+	hits = atomic.LoadInt64(&c.hits)
+	misses = atomic.LoadInt64(&c.misses)
+	return
 }
