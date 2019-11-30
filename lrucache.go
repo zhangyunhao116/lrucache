@@ -1,7 +1,7 @@
 package lrucache
 
 import (
-	"github.com/ZYunH/goutils"
+	"github.com/ZYunH/sbconv"
 	"sync"
 	"sync/atomic"
 )
@@ -44,7 +44,7 @@ func New(maxSize int) *lruCache {
 // The returned value indicates whether a key is eliminated from cache.
 func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 	c.lock.Lock()
-	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
+	k := sbconv.BytesToString(interfaceToBytesWithBuf(c._buf, key))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(k) {
 		c._buf = make([]byte, 0, len(k))
@@ -62,7 +62,7 @@ func (c *lruCache) Set(key, value interface{}) (isRemove bool) {
 func (c *lruCache) set(k string, value interface{}) bool {
 	c._bufNodePtr = c.m[k]
 	if c._bufNodePtr == nil { // This means the k not in the map
-		k = goutils.DeepCopyString(k)
+		k = sbconv.DeepCopyString(k)
 		if len(c.m) < c.maxSize-1 {
 			// Cache is not full, insert a new node
 			_node := &node{}
@@ -96,7 +96,7 @@ func (c *lruCache) set(k string, value interface{}) bool {
 // Get value via a single key.
 func (c *lruCache) Get(key interface{}) (value interface{}, ok bool) {
 	c.lock.Lock()
-	k := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, key))
+	k := sbconv.BytesToString(interfaceToBytesWithBuf(c._buf, key))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(k) {
 		c._buf = make([]byte, 0, len(k))
@@ -149,7 +149,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 		panic("at least one key and one value")
 	}
 	c.lock.Lock()
-	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
+	key := sbconv.BytesToString(interfaceToBytesWithBuf(c._buf, kvs[:len(kvs)-1]...))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))
@@ -163,7 +163,7 @@ func (c *lruCache) MSet(kvs ...interface{}) (isRemove bool) {
 // Get value via multi-keys.
 func (c *lruCache) MGet(keys ...interface{}) (value interface{}, ok bool) {
 	c.lock.Lock()
-	key := goutils.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
+	key := sbconv.BytesToString(interfaceToBytesWithBuf(c._buf, keys...))
 	// Grow buffer slice to preparing enough space for next conversion.
 	if cap(c._buf) < len(key) {
 		c._buf = make([]byte, 0, len(key))
